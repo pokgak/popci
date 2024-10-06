@@ -1,4 +1,4 @@
 name: test test
-commands: |
-  #!/bin/bash
-  echo "Hello, world!"
+jobs:
+  - name: test
+    command: echo "test"
