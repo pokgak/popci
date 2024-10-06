@@ -1,15 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
-	"os"
+	"os"	
 )
-
-type Payload struct {
-	Message string `json:"message"`
-}
 
 type Server struct {
 	logger *slog.Logger
@@ -25,15 +20,11 @@ func (s *Server) webhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusAccepted)
 
-	var payload Payload
-	err := json.NewDecoder(r.Body).Decode(&payload)
+	err := HandlePayload(r.Body)
 	if err != nil {
-		s.logger.Error("Error decoding JSON", "error", err)
-		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+		s.logger.Error("Failed to handle payload", "error", err.Error())
 		return
 	}
-
-	s.logger.Info("Received payload", "payload", payload)
 }
 
 func main() {
