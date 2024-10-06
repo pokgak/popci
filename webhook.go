@@ -53,6 +53,10 @@ func HandlePayload(body io.ReadCloser) error {
 
 	for _, job := range workflow.Jobs {
 		filePath := "/tmp/" + job.Name + ".sh"
+
+		// prepend command with `#!/bin/bash` to make it executable
+		job.Command = "#!/bin/bash\n" + job.Command
+		
 		err := os.WriteFile(filePath, []byte(job.Command), 0755)
 		if err != nil {
 			return err
