@@ -29,7 +29,7 @@ type Worfkflow struct {
 }
 
 type Job struct {
-	Name    string `yaml:"name"`
+	Name    string   `yaml:"name"`
 	Command string `yaml:"command"`
 }
 
@@ -41,7 +41,7 @@ func HandlePayload(body io.ReadCloser) error {
 	}
 
 	slog.Info("Received payload", "payload", payload)
-	_, clonePath, err := CheckoutRepository(payload.Repository.Url)
+	_, clonePath, err := CheckoutRepository(payload)
 	if err != nil {
 		return err
 	}
@@ -67,10 +67,10 @@ func HandlePayload(body io.ReadCloser) error {
 	return nil
 }
 
-func CheckoutRepository(url string) (*git.Repository, string, error) {
-	clonePath := "/tmp/repo"
+func CheckoutRepository(p Payload) (*git.Repository, string, error) {
+	clonePath := "/tmp/repo/" + p.Repository.Name
 	r, err := git.PlainClone(clonePath, false, &git.CloneOptions{
-		URL: url,
+		URL: p.Repository.Url,
 	})
 	if err != nil {
 		return nil, "", err
