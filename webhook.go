@@ -109,7 +109,7 @@ func Execute(script string, command []string) (bool, error) {
 		Stderr: os.Stderr,
 	}
 
-	slog.Info("Executing command ", "command", cmd.String())
+	// slog.Info("Executing command ", "command", cmd.String())
 
 	err := cmd.Start()
 	if err != nil {

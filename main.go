@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
-	"os"	
+	"os"
+	"time"
 )
 
 type Server struct {
