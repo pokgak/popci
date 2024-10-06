@@ -1,11 +1,12 @@
 # popci
 
-- one endpoint /webhook
-- receives payload from Github containing the event that triggered the webhook
-- payload contains
-    * git commit
-    * workflow file?
-- runner executes the script in the workflow file and returns result (where?)
+- [X] one endpoint /webhook
+- [X] receives payload from Github containing the event that triggered the webhook
+    - payload contains
+        * git commit
+        * workflow file?
+- [X] runner executes the script in the workflow file
+- [ ] store result for user to read later
 
 ## questions
 
