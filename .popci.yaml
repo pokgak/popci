@@ -1,4 +1,9 @@
 name: test test
 jobs:
   - name: test
-    command: echo "test"
+    env:
+      - key: FOO
+        value: bar
+    script: |
+      echo "test"
+      echo "testtest"

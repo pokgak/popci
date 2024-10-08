@@ -29,8 +29,9 @@ type Worfkflow struct {
 }
 
 type Job struct {
-	Name    string   `yaml:"name"`
-	Command string `yaml:"command"`
+	Name   string   `yaml:"name"`
+	Script string   `yaml:"script"`
+	Env    []string `yaml:"env"`
 }
 
 func HandlePayload(body io.ReadCloser) error {
@@ -52,17 +53,17 @@ func HandlePayload(body io.ReadCloser) error {
 	}
 
 	for _, job := range workflow.Jobs {
-		filePath := "/tmp/" + job.Name + ".sh"
-
 		// prepend command with `#!/bin/bash` to make it executable
 		job.Command = "#!/bin/bash\n" + job.Command
 		
-		err := os.WriteFile(filePath, []byte(job.Command), 0755)
+		filePath := "/tmp/" + job.Name + ".sh"
+
+		err := os.WriteFile(filePath, []byte(job.Script), 0755)
 		if err != nil {
 			return err
 		}
 
-		_, err = Execute(filePath, []string{})
+		_, err = Execute(filePath, []string{}, job.Env)
 		if err != nil {
 			return err
 		}
@@ -105,12 +106,13 @@ func readWorkflowFile(clonePath string) (*Worfkflow, error) {
 	return &workflow, nil
 }
 
-func Execute(script string, command []string) (bool, error) {
+func Execute(script string, command []string, env []string) (bool, error) {
 	cmd := &exec.Cmd{
 		Path:   script,
 		Args:   command,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
+		Env:    append(os.Environ(), env...),
 	}
 
 	// slog.Info("Executing command ", "command", cmd.String())
