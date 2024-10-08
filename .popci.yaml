@@ -1,10 +1,14 @@
-name: test test
+name: workflow1
 jobs:
-  - name: test
+  - name: job1
     env:
       FOO: bar
     script: |
       echo "test"
       echo "testtest"
       echo $FOO
-      # echo $(env)
+  
+  - name: job2
+    script: |
+      echo "test job2"
+      echo $bar
