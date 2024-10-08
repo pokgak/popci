@@ -7,6 +7,7 @@
         * workflow file?
 - [X] runner executes the script in the workflow file
 - [ ] store result for user to read later
+- [ ] update github commit status
 
 ## questions
 
