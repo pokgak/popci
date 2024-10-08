@@ -32,7 +32,7 @@ type Worfkflow struct {
 type Job struct {
 	Name   string   `yaml:"name"`
 	Script string   `yaml:"script"`
-	Env    []string `yaml:"env"`
+	Env    map[string]string `yaml:"env"`
 }
 
 func HandlePayload(body io.ReadCloser) error {
@@ -92,6 +92,10 @@ func CheckoutRepository(p Payload) (*git.Repository, string, error) {
 
 func readWorkflowFile(clonePath string) (*Worfkflow, error) {
 	filePath := clonePath + "/.popci.yaml"
+	if os.Getenv("IS_LOCAL") == "true" {
+		slog.Info("Running locally, using local workflow file")
+		filePath = ".popci.yaml"
+	}
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -108,18 +112,22 @@ func readWorkflowFile(clonePath string) (*Worfkflow, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	slog.Info("Workflow file content", "workflow", workflow)
 	return &workflow, nil
 }
 
-func Execute(script string, command []string, env []string) (bool, error) {
+func Execute(script string, command []string, env map[string]string) (bool, error) {
+	// convert env to format expected by exec.Cmd
+	envArr := []string{}
+	for k, v := range env {
+		envArr = append(envArr, k+"="+v)
+	}
+
 	cmd := &exec.Cmd{
 		Path:   script,
 		Args:   command,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
-		Env:    append(os.Environ(), env...),
+		Env:    append(os.Environ(), envArr...),
 	}
 
 	err := cmd.Start()

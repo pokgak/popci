@@ -2,9 +2,9 @@ name: test test
 jobs:
   - name: test
     env:
-      - key: FOO
-        value: bar
+      FOO: bar
     script: |
       echo "test"
       echo "testtest"
-      echo $(env)
+      echo $FOO
+      # echo $(env)
