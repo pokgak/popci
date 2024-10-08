@@ -54,7 +54,7 @@ func HandlePayload(body io.ReadCloser) error {
 
 	for _, job := range workflow.Jobs {
 		// prepend command with `#!/bin/bash` to make it executable
-		job.Command = "#!/bin/bash\n" + job.Command
+		job.Script = "#!/usr/bin/env bash --noprofile --norc -eo pipefail\n" + job.Script
 		
 		filePath := "/tmp/" + job.Name + ".sh"
 
