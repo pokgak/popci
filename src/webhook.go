@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
 	"gopkg.in/yaml.v2"
@@ -46,6 +47,7 @@ func HandlePayload(body io.ReadCloser) error {
 	if err != nil {
 		return err
 	}
+	defer os.RemoveAll(filepath.Dir(clonePath)) // clean up
 
 	workflow, err := readWorkflowFile(clonePath)
 	if err != nil {
@@ -73,7 +75,12 @@ func HandlePayload(body io.ReadCloser) error {
 }
 
 func CheckoutRepository(p Payload) (*git.Repository, string, error) {
-	clonePath := "/tmp/repo/" + p.Repository.Name
+	tmpdir, err := os.MkdirTemp("", "repos")
+	if err != nil {
+		return nil, "", err
+	}
+
+	clonePath := filepath.Join(tmpdir, p.Repository.Name)
 	r, err := git.PlainClone(clonePath, false, &git.CloneOptions{
 		URL: p.Repository.Url,
 	})
@@ -114,8 +121,6 @@ func Execute(script string, command []string, env []string) (bool, error) {
 		Stderr: os.Stderr,
 		Env:    append(os.Environ(), env...),
 	}
-
-	// slog.Info("Executing command ", "command", cmd.String())
 
 	err := cmd.Start()
 	if err != nil {
