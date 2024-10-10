@@ -122,10 +122,12 @@ func Execute(script string, command []string, env map[string]string) (bool, erro
 		envArr = append(envArr, k+"="+v)
 	}
 
+	stdout := &OutputWriter{w: os.Stdout}
+
 	cmd := &exec.Cmd{
 		Path:   script,
 		Args:   command,
-		Stdout: os.Stdout,
+		Stdout: stdout,
 		Stderr: os.Stderr,
 		Env:    append(os.Environ(), envArr...),
 	}
